@@ -59,12 +59,12 @@ class DaerahController extends Controller
             ];
         }
 
-        $response = array(
+        $response = [
             "draw" => intval($draw),
             "iTotalRecords" => $totalRecords,
             "iTotalDisplayRecords" => $totalRecordswithFilter,
             "aaData" => $data_arr,
-        );
+        ];
 
         return response()->json($response);
     }

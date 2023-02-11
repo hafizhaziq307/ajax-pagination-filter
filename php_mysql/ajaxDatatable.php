@@ -1,7 +1,7 @@
 <?php
-$odbc = odbc_connect("Driver={SQL Server};Server=localhost\SQLExpress;Database=ajaxfilterpagination;", "sa", "admin@234");
-if (!$odbc) {
-    die("Connection Failed: - " . $odbc . "<br>" .  odbc_error());
+$conn = mysqli_connect("localhost", "root", "", "ajaxfilterpagination");
+if (!$conn) {
+    die("Connection Failed: " . mysqli_connect_error());
 }
 
 $draw = $_GET['draw'];
@@ -16,29 +16,29 @@ $searchValue = $_GET['search']['value']; // Search value
 $filterByNegeri = $_GET['filterByNegeri'];
 
 // Total records
-$query = "SELECT count(*) AS allcount FROM daerah";
-$rows = odbc_fetch_array(odbc_exec($odbc, $query));
+$query = "SELECT COUNT(*) AS allcount FROM daerah";
+$result = mysqli_query($conn, $query);
+$rows = mysqli_fetch_array($result);
 $totalRecords = $rows['allcount'];
 
-$query = "SELECT count(*) AS allcount FROM daerah WHERE nama LIKE '%$searchValue%'";
+$query = "SELECT COUNT(*) AS allcount FROM daerah WHERE nama LIKE '%$searchValue%'";
 if ($filterByNegeri) {
     $query .= " AND kod_negeri = $filterByNegeri";
 }
-$rows = odbc_fetch_array(odbc_exec($odbc, $query));
+$result = mysqli_query($conn, $query);
+$rows = mysqli_fetch_array($result);
 $totalRecordwithFilter = $rows['allcount'];
 
 // Fetch records
-$query = " SELECT * FROM ("
-    . " SELECT ROW_NUMBER() OVER (ORDER BY $columnName $columnSortOrder) rowNum, * FROM daerah"
-    . " WHERE nama LIKE '%$searchValue%'";
+$query = "SELECT * FROM daerah WHERE nama LIKE '%$searchValue%'";
 if ($filterByNegeri) {
     $query .= " AND kod_negeri = $filterByNegeri";
 }
-$query .= " ) newtbl WHERE newtbl.rowNum BETWEEN $row AND " . $row + $rowperpage;
-$result = odbc_exec($odbc, $query);
+$query .= " ORDER BY $columnName $columnSortOrder LIMIT $row, $rowperpage";
+$result = mysqli_query($conn, $query);
 
 $data_arr = [];
-while ($rows = odbc_fetch_array($result)) {
+while ($rows = mysqli_fetch_array($result)) {
     $data_arr[] = [
         "id" => $rows['id'],
         "nama" => $rows['nama'],

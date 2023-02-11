@@ -34,11 +34,12 @@
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: "ajaxDatatable.php",
+                    url: "ajaxDatatable.jsp",
                     type: "GET",
                     data: (data) => {
                         data.filterByNegeri = $('#filterNegeri').val();
                     },
+                    // success: (rslt) => console.log(rslt),
                     error: (error) => console.error(error.responseText),
                 },
                 columns: [{
